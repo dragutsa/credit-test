@@ -13,7 +13,7 @@ use Common\ValueObjects\UserId;
 use Credit\Domain\Entities\CreditUser;
 use Credit\Domain\Entities\Product;
 use Credit\Domain\Events\CreditAdded;
-use Credit\Domain\Helpers\Randomizer;
+use Credit\Domain\Deciders\Decider;
 use Credit\Domain\ValueObjects\Rate;
 use PHPUnit\Framework\TestCase;
 
@@ -21,6 +21,8 @@ use PHPUnit\Framework\TestCase;
 final class CreditUserTest extends TestCase
 {
     private const string NOW = '2025-01-01';
+    private $addCredit;
+    private $releaseEvents;
 
     /**
      * @testWith ["Nevada", 1000]
@@ -42,13 +44,15 @@ final class CreditUserTest extends TestCase
         );
         $product = $this->createProduct();
 
-        $user->addCredit(
+        $this->addCredit = $user->addCredit(
             $product,
             $this->now(),
-            $this->createRandomizer(),
+            $this->createDecider(),
         );
+        $this->addCredit;
 
-        $events = $user->releaseEvents();
+        $this->releaseEvents = $user->releaseEvents();
+        $events = $this->releaseEvents;
         $this->assertCount(1, $events);
         $event = $events[0];
         $this->assertInstanceOf(CreditAdded::class, $event);
@@ -88,16 +92,16 @@ final class CreditUserTest extends TestCase
         $user->addCredit(
             $product,
             $this->now(),
-            $this->createRandomizer(),
+            $this->createDecider(),
         );
     }
 
-    private function createRandomizer(): Randomizer
+    private function createDecider(): Decider
     {
-        $randomizer = $this->createMock(Randomizer::class);
-        $randomizer->method('throwDice')->willReturn(true);
+        $decider = $this->createMock(Decider::class);
+        $decider->method('decide')->willReturn(true);
 
-        return $randomizer;
+        return $decider;
     }
 
     private function createProduct(): Product

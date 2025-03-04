@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Common\ValueObjects;
 
-use Credit\Domain\Helpers\Randomizer;
+use Credit\Domain\Deciders\Decider;
 
 enum State: string
 {
@@ -22,10 +22,10 @@ enum State: string
         return $this === self::CA;
     }
 
-    public function isCreditAvailable(Randomizer $randomizer): bool
+    public function isCreditAvailable(Decider $decider): bool
     {
         if ($this === self::NY) {
-            return $randomizer->throwDice();
+            return $decider->decide();
         }
         return in_array($this, [self::CA, self::NV]);
     }

@@ -12,7 +12,7 @@ use Common\ValueObjects\State;
 use Common\ValueObjects\UserId;
 use Credit\Domain\Events\CreditAdded;
 use Credit\Domain\Exceptions\CreditException;
-use Credit\Domain\Helpers\Randomizer;
+use Credit\Domain\Deciders\Decider;
 use Credit\Domain\Repositories\CreditUsersRepository;
 use Credit\Domain\ValueObjects\Rate;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -70,9 +70,9 @@ class CreditUser implements EventsHolder
         return $this->userId;
     }
 
-    public function addCredit(Product $product, \DateTimeImmutable $dateOfIssue, Randomizer $randomizer): self
+    public function addCredit(Product $product, \DateTimeImmutable $dateOfIssue, Decider $decider): self
     {
-        $this->checkAvailability($dateOfIssue, $randomizer);
+        $this->checkAvailability($dateOfIssue, $decider);
         $rate = $this->recalculateRate($product->getRate());
         $credit = new Credit(
             $this,
@@ -92,7 +92,7 @@ class CreditUser implements EventsHolder
         return $this;
     }
 
-    public function checkAvailability(\DateTimeImmutable $dateOfIssue, Randomizer $randomizer): void
+    public function checkAvailability(\DateTimeImmutable $dateOfIssue, Decider $decider): void
     {
         if (!$this->ficoScore->isSolvent()) {
             throw new CreditException('Fico score is not solvent');
@@ -103,7 +103,7 @@ class CreditUser implements EventsHolder
         if (!(new Age($this->birthDate, $dateOfIssue))->isSolvent()) {
             throw new CreditException('Age is not solvent');
         }
-        if (!$this->state->isCreditAvailable($randomizer)) {
+        if (!$this->state->isCreditAvailable($decider)) {
             throw new CreditException('State is not available for credit');
         }
     }

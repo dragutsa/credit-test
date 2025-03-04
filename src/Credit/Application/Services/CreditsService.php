@@ -10,7 +10,7 @@ use Credit\Application\Dto\AppCreditCheck;
 use Credit\Application\Dto\CreditCheckResult;
 use Credit\Application\Exceptions\AppException;
 use Credit\Domain\Entities\CreditUser;
-use Credit\Domain\Helpers\Randomizer;
+use Credit\Domain\Deciders\Decider;
 use Credit\Domain\Repositories\CreditUsersRepository;
 use Credit\Domain\Repositories\ProductsRepository;
 use Psr\Log\LoggerInterface;
@@ -22,7 +22,7 @@ final readonly class CreditsService
         private ProductsRepository $productsRepository,
         private OutboxStub $outbox,
         private LoggerInterface $logger,
-        private Randomizer $randomizer,
+        private Decider $decider,
     ) {
     }
 
@@ -32,7 +32,7 @@ final readonly class CreditsService
         try {
             $user->checkAvailability(
                 $dto->dateOfIssue,
-                $this->randomizer,
+                $this->decider,
             );
         } catch (\DomainException $e) {
             return new CreditCheckResult(false, $e->getMessage());
@@ -50,7 +50,7 @@ final readonly class CreditsService
                 $user->addCredit(
                     $this->productsRepository->find($dto->productId) ?? $this->error('Product not found'),
                     $dto->dateOfIssue,
-                    $this->randomizer,
+                    $this->decider,
                 ),
             );
         });
