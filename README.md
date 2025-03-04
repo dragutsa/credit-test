@@ -32,22 +32,21 @@ XDEBUG_SESSION=1 PHP_IDE_CONFIG="serverName=symfony" KERNEL_CLASS="\Common\Kerne
 ```
 Создание нового клиента.
 ```curl
-POST https://localhost/
-accept: application/json
-Content-Type: application/json
-Cookie: XDEBUG_SESSION=PHPSTORM
-
-{
-"ssn": "123-45-6789",
-"email": "user777@example.com",
-"firstName": "firstName",
-"lastName": "lastName",
-"addressId": "ae52262c-a5d0-5a6f-a83d-3c355059f959",
-"birthDate": "1999-12-31",
-"ficoScore": 700,
-"monthlyIncome": 2000,
-"phone": "(800) 326-6148"
-}
+curl --location 'localhost/users' \
+--header 'accept:  application/json' \
+--header 'Content-Type:  application/json' \
+--header 'Cookie:  XDEBUG_SESSION=PHPSTORM' \
+--data-raw '{
+  "ssn": "111-22-0009",
+  "email": "user777@example.com",
+  "firstName": "firstName",
+  "lastName": "lastName",
+  "addressId": "ae52262c-a5d0-5a6f-a83d-3c355059f959",
+  "birthDate": "1999-12-31",
+  "ficoScore": 700,
+  "monthlyIncome": 2000,
+  "phone": "(800) 326-6148"
+}'
 ```
 Изменение информации о существующем клиенте.
 ```curl
