@@ -21,8 +21,6 @@ use PHPUnit\Framework\TestCase;
 final class CreditUserTest extends TestCase
 {
     private const string NOW = '2025-01-01';
-    private $addCredit;
-    private $releaseEvents;
 
     /**
      * @testWith ["Nevada", 1000]
@@ -44,15 +42,13 @@ final class CreditUserTest extends TestCase
         );
         $product = $this->createProduct();
 
-        $this->addCredit = $user->addCredit(
+        $user->addCredit(
             $product,
             $this->now(),
             $this->createDecider(),
         );
-        $this->addCredit;
 
-        $this->releaseEvents = $user->releaseEvents();
-        $events = $this->releaseEvents;
+        $events = $user->releaseEvents();
         $this->assertCount(1, $events);
         $event = $events[0];
         $this->assertInstanceOf(CreditAdded::class, $event);
